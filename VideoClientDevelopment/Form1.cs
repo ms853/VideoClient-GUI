@@ -22,8 +22,9 @@ namespace VideoClientDevelopment
 
         public static List<IPCamera> frameInfo = new List<IPCamera>();
 
-        public static IPCamera camera;
+        static IPCamera camera; //A camera class I wrote to hold a camera information.
 
+        
 
         public Form1()
         {
@@ -48,57 +49,18 @@ namespace VideoClientDevelopment
                 return false;
             }
         }
-
-        //Old method! I have implemented this method within the ReadData method
-        private static string[] ReadIPHeader(NetworkStream ns)
-        {
-            int buffer = 0;
-            string bufferString = "";
-           // string decodedData = null;
-           // byte[] iPByteBuffer = null;
-            string[] iPHeaderArr = null;
-
-            try
-            {
-                while ((buffer = ns.ReadByte()) != -1)
-                {
-                    char tempChar = (char)buffer;
-                    //bufferString += tempChar;
-                    switch (tempChar)
-                    {
-                        case ']':
-                            continue;
-                            //break;
-                        default:
-                            bufferString += tempChar;
-                            break;
-                    }
-                   
-                }
-                string formattedStr = bufferString.Replace('[', ' ');
-                iPHeaderArr = formattedStr.Split('|');
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-            //Work with the string array and return it.
-            return iPHeaderArr;
-        }
-
+        
         //https://stackoverflow.com/questions/1080442/how-to-convert-an-stream-into-a-byte-in-c
   
         //Method for reading data from the server
         private static void ReadData(TcpClient tcpClient)
         {
-            IPCamera camera; //A camera class I wrote to hold a camera information.
+            
             String decodedData = null; //storing the decoded response from the server
             byte[] tempJPEGArray = null;
             string[] ipArr = null; //temp array
             int sizeOfPayload = 0;
             string bufferString = "";
-            
 
             try
             {
@@ -126,14 +88,17 @@ namespace VideoClientDevelopment
                                 camera = new IPCamera
                                 {
                                     CameraName = ipArr[2],
-                                    Width = Convert.ToInt32(ipArr[3]),
-                                    Height =Convert.ToInt32(ipArr[4])
+                                    Width = int.Parse(ipArr[3]),
+                                    Height =int.Parse(ipArr[4]),
+                                    DateTime=Convert.ToDateTime(ipArr[5]),
+                                    FrameSize=int.Parse(ipArr[6])
                                 };
                                 //set the size of the array to the temporary byte array
                                 tempJPEGArray = new byte[sizeOfPayload];
                                 tempJPEGArray = ReadPayload(tempJPEGArray, stream); //Load the corresponding image
                                 decodedData = UTF8Encoding.ASCII.GetString(tempJPEGArray); //decode the data
                                 DisplayImage(camera, tempJPEGArray); //Load image
+                                bufferString = String.Empty; //set it to an empty string to clear the contents for the new ip header.
                                 break;
                             default:
                                 bufferString += tempChar;
@@ -160,32 +125,21 @@ namespace VideoClientDevelopment
         private static void DisplayImage(IPCamera iPCamera, byte[] payload)
         {
             Image image = null;
-            int xSize, ySize; //width and height of the image.
-            
+            Label cameraLabel = new Label();
             try
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
-
-                    if (!image.Equals(null))
-                    {
-                        image.Dispose();
-                    }
+                    //Write data of the payload into memory
                     ms.Write(payload, 0, payload.Length);
-                    //ms.Read(payload, 0, payload.Length);
+                    //LOOK LOAD IMAGE HERE
                     image = Image.FromStream(ms);
-
-                    Label cameraText = new Label(); //label to display the name of the camera.
-                    //Set image properties
-                    xSize = camera.Width;
-                    ySize = camera.Height;
-                    cameraText.Text = camera.CameraName;
-                    // Stretches the image to fit the pictureBox.
-                    PictureBox pictureBox1 = new PictureBox();
-                    pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-                    pictureBox1.ClientSize = new Size(xSize, ySize);
-                    pictureBox1.Image = image;
-                   
+                    cameraLabel.Text = camera.CameraName;
+                    PictureBox myPictureBox = new PictureBox();
+                    myPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                    myPictureBox.ClientSize = new Size(camera.Width, camera.Height);
+                    myPictureBox.Image = image;
+                    
                 }
             } catch (Exception ex)
             {
@@ -313,5 +267,13 @@ namespace VideoClientDevelopment
             }
         }
 
+        private void DisplayImageInfo(object sender, EventArgs e)
+        {
+
+           
+            MessageBox.Show("Live stream coming from IP Camera: " + camera.CameraName
+                      + "\nDate and Time of the stream: " + camera.DateTime
+                      + "\nThe size of the data: " + camera.FrameSize);
+        }
     }
 }

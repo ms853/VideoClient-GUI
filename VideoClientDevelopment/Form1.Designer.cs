@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.PictureBox myPictureBox;
+            System.Windows.Forms.Label cameraLabel;
             this.label1 = new System.Windows.Forms.Label();
             this.connectButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -36,12 +38,23 @@
             this.label3 = new System.Windows.Forms.Label();
             this.iPTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label5 = new System.Windows.Forms.Label();
             this.cameraText = new System.Windows.Forms.Label();
+            this.displayImageBtn = new System.Windows.Forms.Button();
+            myPictureBox = new System.Windows.Forms.PictureBox();
+            cameraLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(myPictureBox)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
+            // 
+            // myPictureBox
+            // 
+            myPictureBox.Location = new System.Drawing.Point(252, 209);
+            myPictureBox.Name = "myPictureBox";
+            myPictureBox.Size = new System.Drawing.Size(238, 186);
+            myPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            myPictureBox.TabIndex = 8;
+            myPictureBox.TabStop = false;
             // 
             // label1
             // 
@@ -118,19 +131,11 @@
             this.label2.TabIndex = 7;
             this.label2.Text = "Enter below the local IP address and port number (which is 7000)";
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(277, 226);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(213, 169);
-            this.pictureBox1.TabIndex = 8;
-            this.pictureBox1.TabStop = false;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F);
-            this.label5.Location = new System.Drawing.Point(289, 410);
+            this.label5.Location = new System.Drawing.Point(286, 410);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(102, 17);
             this.label5.TabIndex = 9;
@@ -142,18 +147,39 @@
             this.cameraText.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F);
             this.cameraText.Location = new System.Drawing.Point(419, 410);
             this.cameraText.Name = "cameraText";
-            this.cameraText.Size = new System.Drawing.Size(46, 17);
+            this.cameraText.Size = new System.Drawing.Size(0, 17);
             this.cameraText.TabIndex = 10;
-            this.cameraText.Text = "label6";
+            // 
+            // displayImageBtn
+            // 
+            this.displayImageBtn.Location = new System.Drawing.Point(507, 372);
+            this.displayImageBtn.Name = "displayImageBtn";
+            this.displayImageBtn.Size = new System.Drawing.Size(108, 23);
+            this.displayImageBtn.TabIndex = 11;
+            this.displayImageBtn.Text = "Image Information";
+            this.displayImageBtn.UseVisualStyleBackColor = true;
+            this.displayImageBtn.Click += new System.EventHandler(this.DisplayImageInfo);
+            // 
+            // cameraLabel
+            // 
+            cameraLabel.AutoSize = true;
+            cameraLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F);
+            cameraLabel.Location = new System.Drawing.Point(394, 410);
+            cameraLabel.Name = "cameraLabel";
+            cameraLabel.Size = new System.Drawing.Size(53, 17);
+            cameraLabel.TabIndex = 12;
+            cameraLabel.Text = "(name)";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(cameraLabel);
+            this.Controls.Add(this.displayImageBtn);
             this.Controls.Add(this.cameraText);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(myPictureBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.connectButton);
@@ -161,9 +187,9 @@
             this.Name = "Form1";
             this.Text = "Moose Ltd Video Client";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(myPictureBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -179,9 +205,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox iPTextBox;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label cameraText;
+        private System.Windows.Forms.Button displayImageBtn;
     }
 }
 
