@@ -18,10 +18,7 @@ namespace VideoClientDevelopment
     {
         //Tcp client object that will be used as a socket to connect to the server.
         TcpClient client = new TcpClient();
-        static Form1 form1 = new Form1(); //Instance of the first form, which will be used for navigation.
-
-        public static List<IPCamera> frameInfo = new List<IPCamera>();
-
+        static Form1 form1 = new Form1(); 
         static IPCamera camera; //A camera class I wrote to hold a camera information.
 
         
@@ -51,7 +48,6 @@ namespace VideoClientDevelopment
         }
         
         //https://stackoverflow.com/questions/1080442/how-to-convert-an-stream-into-a-byte-in-c
-  
         //Method for reading data from the server
         private static void ReadData(TcpClient tcpClient)
         {
@@ -146,7 +142,9 @@ namespace VideoClientDevelopment
                 MessageBox.Show("Error", "\n" + ex.Message);
             }
         }
-
+	
+	//This method will read the corresponding bytes for the JPEG data and store it in a byte array.
+	//This method will return a byte array containing the data corresponding to the IP header. 
         private static byte[] ReadPayload(byte[] tempArray, NetworkStream stream)
         {
             int buffer = 0;
@@ -172,7 +170,7 @@ namespace VideoClientDevelopment
                                 totalBytesRead += buffer;
                                 break;
                         }
-
+			//Exit loop if the total bytes that have been read is equal to the required length of the packet.
                         if (totalBytesRead == tempArray.Length) break;
                         
                     }
@@ -182,9 +180,12 @@ namespace VideoClientDevelopment
             {
                 MessageBox.Show("Error", "Unable to complete operation due to:\n" + ex.Message);
             }
+	    
             return tempArray;
         }
-
+	
+	/*
+	Old implementation!
         private static string LoadPayload(byte[] dataReceived, NetworkStream networkStream)
         {
             string to_return = null;
@@ -239,6 +240,7 @@ namespace VideoClientDevelopment
             }    
             return dataFromBuffer;
         }
+	*/
 
         //Event method for allowing the user to connect.
         private void OnConnectButton_Click(object sender, EventArgs e)
@@ -266,11 +268,12 @@ namespace VideoClientDevelopment
                 MessageBox.Show(se.Message);
             }
         }
-
+	
+	
+	//Method to display information about the data sent from the IP Camera.
         private void DisplayImageInfo(object sender, EventArgs e)
         {
 
-           
             MessageBox.Show("Live stream coming from IP Camera: " + camera.CameraName
                       + "\nDate and Time of the stream: " + camera.DateTime
                       + "\nThe size of the data: " + camera.FrameSize);
