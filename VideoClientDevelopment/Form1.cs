@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using System.IO;
+using System.Threading;
 
 namespace VideoClientDevelopment
 {
@@ -21,6 +22,7 @@ namespace VideoClientDevelopment
         static Form1 form1 = new Form1(); 
         static IPCamera camera; //A camera class I wrote to hold a camera information.
 
+        
         
 
         public Form1()
@@ -49,7 +51,7 @@ namespace VideoClientDevelopment
         
         //https://stackoverflow.com/questions/1080442/how-to-convert-an-stream-into-a-byte-in-c
         //Method for reading data from the server
-        private static void ReadData(TcpClient tcpClient)
+        private void ReadData()
         {
             
             String decodedData = null; //storing the decoded response from the server
@@ -58,13 +60,15 @@ namespace VideoClientDevelopment
             int sizeOfPayload = 0;
             string bufferString = "";
 
+           
+
             try
             {
                
                 //Create stream
-                NetworkStream stream = tcpClient.GetStream();
+                NetworkStream stream = client.GetStream();
                 //check if client is connected 
-                if (form1.IsConnected(tcpClient))
+                if (IsConnected(client))
                 {
                     int buffer = 0; //buffer to temp keep track for every byte read.
                     //While loop to ensure every byte is read until the end of the stream. 
@@ -113,15 +117,14 @@ namespace VideoClientDevelopment
             catch (Exception ex)
             {
                 MessageBox.Show("Something Went Wrong \n\n" + ex.Message);
-                tcpClient.Close();
+                client.Close();
             }
         }
 
         //Method for displaying the image for the video stream
-        private static void DisplayImage(IPCamera iPCamera, byte[] payload)
+        private void DisplayImage(IPCamera iPCamera, byte[] payload)
         {
             Image image = null;
-            Label cameraLabel = new Label();
             try
             {
                 using (MemoryStream ms = new MemoryStream())
@@ -131,7 +134,7 @@ namespace VideoClientDevelopment
                     //LOOK LOAD IMAGE HERE
                     image = Image.FromStream(ms);
                     cameraLabel.Text = camera.CameraName;
-                    PictureBox myPictureBox = new PictureBox();
+                    //PictureBox myPictureBox = new PictureBox();
                     myPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
                     myPictureBox.ClientSize = new Size(camera.Width, camera.Height);
                     myPictureBox.Image = image;
@@ -145,7 +148,7 @@ namespace VideoClientDevelopment
 	
 	//This method will read the corresponding bytes for the JPEG data and store it in a byte array.
 	//This method will return a byte array containing the data corresponding to the IP header. 
-        private static byte[] ReadPayload(byte[] tempArray, NetworkStream stream)
+        private byte[] ReadPayload(byte[] tempArray, NetworkStream stream)
         {
             int buffer = 0;
             int totalBytesRead = 0;
@@ -248,7 +251,10 @@ namespace VideoClientDevelopment
 
             String address = iPTextBox.Text;
             Int32 port = Int32.Parse(portTextBox.Text);
-            
+
+            Thread bgThread = new Thread(new ThreadStart(ReadData)); //Creating a separate thread to read the data from the incoming packets.
+            bgThread.IsBackground = true; //Declare the thread as a background thread.
+
             try
             {
                 //Attempting to connect to the server with the given IP address and port.
@@ -257,8 +263,8 @@ namespace VideoClientDevelopment
                 iPTextBox.Clear();
                 portTextBox.Clear();
                 MessageBox.Show("Successfully connected to Moose Server!");
-                //Read data 
-                ReadData(client);
+                //Read data by invoking the background thread.
+                bgThread.Start(); 
 
             } catch (SocketException se)
             {
